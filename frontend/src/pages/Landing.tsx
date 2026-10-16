@@ -5,6 +5,8 @@ import { api } from "../api";
 import { Shell } from "../components/Shell";
 import { useLanguage } from "../i18n";
 
+const heroIllustration = new URL("../assets/cybersecurity-hero-v2.png", import.meta.url).href;
+
 type SessionSummary = { sessionCode: string; completed: boolean };
 
 export function Landing() {
@@ -50,7 +52,7 @@ export function Landing() {
 
   return <Shell><div className="landing-page">
     <section className="landing-hero">
-      <img src="/cybersecurity-hero-v2.png" alt={isArabic ? "رسم توعوي يوضح اكتشاف رسالة تصيد ومسار تحقق آمن" : "Cybersecurity artwork showing a phishing message being detected and verified"}/>
+      <img src={heroIllustration} alt={isArabic ? "رسم توعوي يوضح اكتشاف رسالة تصيد ومسار تحقق آمن" : "Cybersecurity artwork showing a phishing message being detected and verified"}/>
       <div className="landing-hero__shade" />
       <div className="landing-hero__copy">
         <span>{isArabic ? "مختبر الوعي السيبراني" : "Cyber awareness lab"}</span>
