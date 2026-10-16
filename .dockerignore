@@ -22,3 +22,9 @@ backups
 ui-snapshots
 backend/src/generated
 **/__pycache__
+**/*.pem
+**/*.key
+**/*.crt
+**/*.cer
+**/*.p12
+**/*.pfx

@@ -1,5 +1,7 @@
 # Cyber Awareness Lab
 
+For the already-running department VPS, see [public HTTPS preparation for gameserver.ly](deploy/ubuntu/PUBLIC_HTTPS.md) and its [verification report](deploy/ubuntu/PUBLIC_HTTPS_VERIFICATION.md). The separate host Nginx vhost preserves the maintenance defaults and proxies to the existing private Docker port. Follow the GitHub/Termius review procedure; do not rerun installation or regenerate production secrets. Certificate/key files are excluded from Git and image builds.
+
 A seven-step cybersecurity awareness simulation designed for a one-day event. React serves the participant and administrator interfaces, Express owns scoring and session logic, and PostgreSQL is the source of truth. Nginx is the only public production service.
 
 ## Department Ubuntu VPS preparation (2026-10-16)

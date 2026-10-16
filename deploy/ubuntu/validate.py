@@ -68,7 +68,8 @@ def validate(model):
                 and url.path == "/" + database["POSTGRES_DB"], f"{name}: database credentials do not agree")
         require(re.fullmatch(r"[0-9a-f]{64}", database["POSTGRES_PASSWORD"]), "Use the generated URI-safe Postgres password")
         require(len(env["ADMIN_PASSWORD"]) >= 32 and len(env["SESSION_SECRET"]) >= 32, "Production secrets are too short")
-        require(env["PUBLIC_BASE_URL"] in ["http://localhost:8080", "http://127.0.0.1:8080"], "Initial deployment must use a loopback origin")
+        require(env["PUBLIC_BASE_URL"] in ["http://localhost:8080", "http://127.0.0.1:8080", "https://gameserver.ly"],
+                "Use a private origin or the approved https://gameserver.ly origin")
 
 
 def main():

@@ -1,5 +1,7 @@
 # Department Ubuntu VPS deployment guide
 
+> For the already-running application and the new `gameserver.ly` HTTPS virtual host, use [PUBLIC_HTTPS.md](PUBLIC_HTTPS.md). Do not repeat Docker installation, database initialization or secret generation from this original private-deployment guide. The public-origin validator now permits the approved HTTPS origin while keeping Docker on loopback.
+
 Prepared for Ubuntu 24.04.5 LTS, 4 vCPUs, 5.8 GiB RAM and 96 GB storage. This is a **local preparation deliverable**, not permission to deploy. No VPS connection or installation was performed. Commands below are for a later approved deployment.
 
 ## Approval boundary — resolve before installation
@@ -100,6 +102,7 @@ On the development computer, from the project root, package source without devel
 tar --exclude='node_modules' --exclude='./.git' --exclude='.env*' \
   --exclude='./backend/dist' --exclude='./backend/src/generated' \
   --exclude='./frontend/dist' --exclude='./public' --exclude='./backups' \
+  --exclude='*.pem' --exclude='*.key' --exclude='*.crt' --exclude='*.cer' --exclude='*.p12' --exclude='*.pfx' \
   --exclude='./.tmp*' --exclude='*.db' --exclude='*.db-*' --exclude='*.dump' \
   --exclude='./.vercel*' --exclude='./.phishing*' --exclude='./.sites-runtime' \
   --exclude='./.aws' --exclude='./.codex' --exclude='./.agents' \
@@ -285,7 +288,7 @@ If a migration changed the schema, do not run an older app against it or delete 
 
 Public participants on different networks cannot reach the loopback endpoint. Later approval must cover the domain/DNS A and any AAAA records, a department-approved public reverse proxy, TLS certificates/renewal ownership, inbound 80/443 at host/provider firewalls, and any changes to existing proxy/services. Confirm IPv6 policy separately. DNS alone does not provide connectivity or TLS.
 
-A future approved TLS proxy could forward to this private endpoint; its forwarded-header trust, origin and cookie behavior must be tested. Set `PUBLIC_BASE_URL=https://APPROVED_DOMAIN` so the existing app uses Secure admin cookies, update the private-only validator deliberately, arrange certificate management without taking over existing services, and test participant/admin flows over HTTPS. No certificates are issued, ports opened, public proxy configured or renewal jobs installed here.
+The current prepared TLS proxy for `gameserver.ly` is documented in [PUBLIC_HTTPS.md](PUBLIC_HTTPS.md), including scoped Cloudflare trust, the two-proxy header handoff, the approved origin and Secure cookies. Docker remains private. Its installation/activation requires coordinated review of the existing Nginx defaults and certificates. No certificate is issued, port opened, VPS proxy activated or renewal job installed by local preparation.
 
 ## Verification status
 

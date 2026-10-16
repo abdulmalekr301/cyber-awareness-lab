@@ -55,6 +55,21 @@ class DeploymentPreparation(unittest.TestCase):
         with self.assertRaises(ValueError):
             validation.validate(model)
 
+    def test_approved_https_origin_keeps_private_docker_binding(self):
+        model = copy.deepcopy(self.model)
+        for service in ["app", "migrate"]:
+            model["services"][service]["environment"]["PUBLIC_BASE_URL"] = "https://gameserver.ly"
+        validation.validate(model)
+        model["services"]["nginx"]["ports"][0]["host_ip"] = "0.0.0.0"
+        with self.assertRaises(ValueError):
+            validation.validate(model)
+
+    def test_arbitrary_public_origin_is_rejected(self):
+        model = copy.deepcopy(self.model)
+        model["services"]["app"]["environment"]["PUBLIC_BASE_URL"] = "https://unapproved.invalid"
+        with self.assertRaises(ValueError):
+            validation.validate(model)
+
     def test_published_database_is_rejected(self):
         model = copy.deepcopy(self.model)
         model["services"]["postgres"]["ports"] = [{"target": 5432, "published": "5432", "host_ip": "127.0.0.1"}]

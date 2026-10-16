@@ -30,8 +30,9 @@ try {
   const port = probe.address().port;
   await new Promise((resolve, reject) => probe.close(error => error ? reject(error) : resolve()));
   const base = `http://127.0.0.1:${port}`;
+  const publicMode = process.env.CYBERLAB_TEST_PUBLIC === "1";
   const env = { ...process.env, NODE_ENV: "production", PORT: String(port), DATABASE_URL: "", TURSO_DATABASE_URL: dbUrl,
-    TURSO_AUTH_TOKEN: "", PUBLIC_BASE_URL: base, ADMIN_PASSWORD: "isolated-production-smoke-admin-password",
+    TURSO_AUTH_TOKEN: "", PUBLIC_BASE_URL: publicMode ? "https://gameserver.ly" : base, ADMIN_PASSWORD: "isolated-production-smoke-admin-password",
     SESSION_SECRET: "isolated-production-smoke-secret-at-least-32-characters" };
   async function start() {
     server = spawn(process.execPath, [path.join(stage, "backend/dist/server.js")], { cwd: stage, env, stdio: ["ignore", "pipe", "pipe"] });
@@ -100,13 +101,14 @@ try {
   assert.ok(cookie);
   assert.match(login.response.headers.get("set-cookie"), /HttpOnly/i);
   assert.match(login.response.headers.get("set-cookie"), /SameSite=Strict/i);
+  if (publicMode) assert.match(login.response.headers.get("set-cookie"), /;\s*Secure(?:;|$)/i);
   assert.equal((await request("/api/admin/stats", { cookie })).data.completedSessions, 1);
   await stop();
   await start();
   assert.deepEqual((await request(`/api/sessions/${registration.sessionCode}/results`)).data, results);
   assert.equal((await request("/api/admin/stats", { cookie })).data.completedSessions, 1);
   await stop();
-  console.log("PASS: compiled production startup, built frontend/assets, isolated database, all seven games/140 points, removed action rejected, admin authentication and participant/admin persistence across restart.");
+  console.log(`PASS: compiled production startup, built frontend/assets, isolated database, all seven games/140 points, removed action rejected, admin authentication and participant/admin persistence across restart${publicMode ? ", approved HTTPS origin and Secure cookies" : ""}.`);
 } finally {
   if (server && server.exitCode === null) {
     const exiting = once(server, "exit");

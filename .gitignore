@@ -15,3 +15,9 @@ public/
 deploy/ubuntu/.env.production*
 backups/
 deploy/ubuntu/__pycache__/
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
