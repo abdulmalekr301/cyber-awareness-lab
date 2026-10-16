@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+coverage/
+frontend/dist/
+backend/dist/
+backend/src/generated/
+public/
+.vercel/
+.vercel-upload*/
+.phishing-redirect*/
+.tmp-turso-*
+.sites-runtime/
+*.log
+deploy/ubuntu/.env.production*
+backups/
+deploy/ubuntu/__pycache__/

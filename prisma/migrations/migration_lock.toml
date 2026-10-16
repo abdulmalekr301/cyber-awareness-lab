@@ -1,0 +1,2 @@
+# PostgreSQL migration history; Turso uses its separate schema and SQL scripts.
+provider = "postgresql"

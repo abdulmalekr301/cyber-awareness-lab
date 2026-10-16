@@ -1,0 +1,190 @@
+[
+  {
+    "id": "login-safety",
+    "title": "The Look-Alike Login Portal",
+    "eyebrow": "Scenario 1 · Check the address",
+    "description": "A link opens a university-style sign-in portal. The page looks familiar, but its address has been subtly changed. This is a safe simulation—never enter a real password.",
+    "prompt": "Will you sign in, or stop and verify the official address?",
+    "briefing": {
+      "title": "Your university session has expired",
+      "scene": "You receive a message saying your university portal session has expired and that you must sign in again before you can access your courses.",
+      "linkLabel": "https://sms.u0t.edu.ly/eng/",
+      "launchText": "Open the sign-in link"
+    },
+    "actions": [
+      {
+        "id": "clean",
+        "label": "Clean"
+      },
+      {
+        "id": "hack",
+        "label": "Hack"
+      }
+    ],
+    "correctAction": "hack",
+    "feedback": {
+      "correct": "Correct. The page is a look-alike: the address is not the real university domain. Checking the exact URL is more reliable than trusting the page design.",
+      "incorrect": "This page is a look-alike. The key clue is the altered address rather than the familiar design."
+    }
+  },
+  {
+    "id": "phishing",
+    "title": "Unexpected Payroll Attachment",
+    "eyebrow": "Scenario 2 · Attachment safety",
+    "description": "An email contains a payroll spreadsheet and asks you to enable macros so the document can display correctly.",
+    "prompt": "What is the safest response to this attachment?",
+    "briefing": {
+      "title": "An unexpected payroll file arrives",
+      "scene": "A message claims a payroll correction is attached. The document asks you to enable macros before you can read it. Inspect the request and decide how to respond.",
+      "linkLabel": "Open: Updated payroll statement.xlsm",
+      "launchText": "Open the email"
+    },
+    "actions": [
+      {
+        "id": "enable-macros",
+        "label": "Open it and enable macros"
+      },
+      {
+        "id": "report-attachment",
+        "label": "Do not enable macros; verify and report it"
+      }
+    ],
+    "correctAction": "report-attachment",
+    "feedback": {
+      "correct": "Correct. Unexpected macro-enabled documents can run malicious code. Verify through a trusted channel and report the message.",
+      "incorrect": "Enabling macros in an unexpected attachment is unsafe. Verify the request independently and report the message instead."
+    }
+  },
+  {
+    "id": "social-engineering",
+    "title": "A Message from ‘Event Support’",
+    "eyebrow": "Scenario 3 · Social engineering",
+    "description": "An external account claiming to be event support says your badge account is about to be locked and asks for the six-digit sign-in code sent to your phone.",
+    "prompt": "How would you respond to this conversation?",
+    "briefing": {
+      "title": "A support message appears during the event",
+      "scene": "You are waiting to enter a workshop when a new external contact messages you. They know the event name and say there is an urgent problem with your badge account.",
+      "linkLabel": "Teams · New message from Event Support",
+      "launchText": "Open conversation"
+    },
+    "actions": [
+      {
+        "id": "share-code",
+        "label": "Send the code before the account is locked"
+      },
+      {
+        "id": "verify-request",
+        "label": "Do not share it; contact support using the official event channel"
+      },
+      {
+        "id": "post-code",
+        "label": "Ask the event group whether the code belongs to support"
+      }
+    ],
+    "correctAction": "verify-request",
+    "feedback": {
+      "correct": "Correct. A sign-in code is an authentication secret. Real support should not ask you to send it. End the conversation and verify the issue through the official event channel.",
+      "incorrect": "Do not send or post a sign-in code. It can let another person complete a login as you. Contact support through the official event channel instead."
+    }
+  },
+  {
+    "id": "url-safety",
+    "title": "Unexpected MFA Approval",
+    "eyebrow": "Scenario 4 · Authentication fatigue",
+    "description": "Your phone shows an MFA approval request even though you are not signing in. A caller claiming to be support asks you to approve it.",
+    "prompt": "How should you respond to the unexpected approval request?",
+    "briefing": {
+      "title": "Your authenticator starts prompting",
+      "scene": "Several approval prompts appear on your phone. You did not initiate a sign-in, and someone claiming to be IT calls to ask you to approve the latest request.",
+      "linkLabel": "Authenticator notification: Approve sign-in?",
+      "launchText": "Review the approval request"
+    },
+    "actions": [
+      {
+        "id": "approve-request",
+        "label": "Approve it so support can finish"
+      },
+      {
+        "id": "deny-and-report",
+        "label": "Deny it, change the password, and report it"
+      }
+    ],
+    "correctAction": "deny-and-report",
+    "feedback": {
+      "correct": "Correct. An unexpected MFA prompt may mean someone already has the password. Deny it, secure the account, and contact support through an official channel.",
+      "incorrect": "Never approve an MFA request you did not initiate. Deny it, secure the account, and report the incident through an official channel."
+    }
+  },
+  {
+    "id": "permission-detective",
+    "title": "Permission Detective",
+    "eyebrow": "Scenario 5 · App permissions",
+    "description": "QuickCalc+, a fictional calculator, requests access to your microphone, contacts, and location before you can use it.",
+    "prompt": "What should you do before using this calculator?",
+    "briefing": {
+      "title": "Review a new calculator app",
+      "scene": "You need a simple calculator for a workshop. A permission sheet appears before installation. Inspect the access QuickCalc+ is requesting.",
+      "linkLabel": "QuickCalc+ · Review app permissions",
+      "launchText": "Review permissions"
+    },
+    "actions": [
+      {
+        "id": "allow-all",
+        "label": "Allow everything; the app might need it"
+      },
+      {
+        "id": "review-permissions",
+        "label": "Review the permissions and refuse unnecessary access"
+      },
+      {
+        "id": "install-unchecked",
+        "label": "Install without checking the permissions"
+      },
+      {
+        "id": "friend-test",
+        "label": "Send it to a friend to test first"
+      }
+    ],
+    "correctAction": "review-permissions",
+    "feedback": {
+      "correct": "Correct. Give apps only the access their function needs. Unnecessary permissions can expose private information.",
+      "incorrect": "Review what an app actually needs before granting access. A calculator should not need your microphone, contacts, or location."
+    }
+  },
+  {
+    "id": "ransomware",
+    "title": "Ransomware: Save the Files",
+    "eyebrow": "Scenario 6 · Incident response",
+    "description": "A fictional university office computer suddenly shows a message saying its files are locked and demanding payment.",
+    "prompt": "What is the safest first response?",
+    "briefing": {
+      "title": "An unexpected warning interrupts your work",
+      "scene": "During a workshop, an office computer displays a file-lock warning. This is a safe simulation: no files or devices are affected.",
+      "linkLabel": "Training computer · View the warning",
+      "launchText": "View the warning"
+    },
+    "actions": [
+      {
+        "id": "isolate-report",
+        "label": "Disconnect the device from the network and report it to IT"
+      },
+      {
+        "id": "pay-ransom",
+        "label": "Pay the ransom immediately"
+      },
+      {
+        "id": "keep-working",
+        "label": "Ignore the warning and keep working"
+      },
+      {
+        "id": "restart-repeat",
+        "label": "Restart repeatedly until the warning disappears"
+      }
+    ],
+    "correctAction": "isolate-report",
+    "feedback": {
+      "correct": "Correct. Isolate the device from the network and contact IT promptly. Containment and reporting help limit harm; payment does not guarantee recovery.",
+      "incorrect": "Disconnect from the network and report the incident to IT. Avoid panic, payment, and repeated restarts; follow the response team's instructions."
+    }
+  }
+]

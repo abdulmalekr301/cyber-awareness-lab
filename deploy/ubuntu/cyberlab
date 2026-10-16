@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+app_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
+env_file="${CYBERLAB_ENV_FILE:-$app_root/deploy/ubuntu/.env.production}"
+if [[ ! -f "$env_file" ]]; then
+  printf 'Missing application environment file: %s\nRun python3 deploy/ubuntu/create-env.py first.\n' "$env_file" >&2
+  exit 1
+fi
+# Ignore ambient Compose file/project selectors. Always use this standalone stack.
+unset COMPOSE_FILE COMPOSE_PROJECT_NAME COMPOSE_PROFILES DOCKER_HOST DOCKER_CONTEXT
+# Compose normally lets shell variables override --env-file. Only this dedicated
+# file should select VPS credentials, database identity, origin and release.
+unset CYBERLAB_RELEASE POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD
+unset ADMIN_PASSWORD SESSION_SECRET PUBLIC_BASE_URL DATABASE_URL TURSO_DATABASE_URL TURSO_AUTH_TOKEN
+exec docker --context default compose --project-directory "$app_root/deploy/ubuntu" \
+  --env-file "$env_file" -f "$app_root/deploy/ubuntu/compose.yaml" "$@"

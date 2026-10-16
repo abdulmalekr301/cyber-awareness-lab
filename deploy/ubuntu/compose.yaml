@@ -1,0 +1,129 @@
+# Standalone VPS stack. Do not merge with the root/public Compose files.
+name: cyber-awareness-lab
+
+x-app-environment: &app-environment
+  NODE_ENV: production
+  PORT: "3000"
+  DATABASE_URL: postgresql://${POSTGRES_USER:?Set POSTGRES_USER}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:?Set POSTGRES_DB}?schema=public&connection_limit=20&pool_timeout=10
+  # Explicitly select PostgreSQL; inherited developer Turso settings cannot win.
+  TURSO_DATABASE_URL: ""
+  TURSO_AUTH_TOKEN: ""
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD}
+  SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET}
+  PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:?Set PUBLIC_BASE_URL}
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [database]
+    security_opt: [no-new-privileges:true]
+    shm_size: 256m
+    mem_limit: 1536m
+    cpus: 1.5
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    logging: *logging
+
+  # Explicit maintenance operation; ordinary starts/restarts do not run migrations.
+  migrate:
+    profiles: [maintenance]
+    image: cyber-awareness-lab:${CYBERLAB_RELEASE:?Set CYBERLAB_RELEASE}
+    command: [./node_modules/.bin/prisma, migrate, deploy, --schema=prisma/schema.prisma]
+    environment: *app-environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [database]
+    init: true
+    read_only: true
+    tmpfs: ["/tmp:rw,nosuid,noexec,size=128m"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    cpus: 1.0
+    logging: *logging
+
+  app:
+    image: cyber-awareness-lab:${CYBERLAB_RELEASE:?Set CYBERLAB_RELEASE}
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    command: [node, backend/dist/server.js]
+    environment: *app-environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [frontend, database]
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs: ["/tmp:rw,nosuid,noexec,size=128m"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 1024m
+    cpus: 2.0
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    logging: *logging
+
+  nginx:
+    image: nginx:stable-alpine
+    user: nginx
+    entrypoint: [nginx, -g, "daemon off;"]
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - target: 8080
+        published: "8080"
+        host_ip: 127.0.0.1
+        protocol: tcp
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks: [frontend]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: ["/tmp:rw,nosuid,noexec,size=32m"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    cpus: 0.5
+    healthcheck:
+      test: [CMD-SHELL, "wget -q -O /dev/null http://127.0.0.1:8080/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    logging: *logging
+
+networks:
+  frontend:
+    driver: bridge
+  database:
+    driver: bridge
+    internal: true
+
+volumes:
+  postgres_data:

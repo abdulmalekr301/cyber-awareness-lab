@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../backend/src/generated/turso"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("TURSO_DATABASE_URL")
+}
+
+model ParticipantSession {
+  id                        String            @id @default(cuid())
+  sessionCode               String            @unique
+  displayName               String?
+  telegramUsername          String?
+  startedAt                 DateTime          @default(now())
+  completedAt               DateTime?
+  totalScore                Int               @default(0)
+  completed                 Boolean           @default(false)
+  createdAt                 DateTime          @default(now())
+  updatedAt                 DateTime          @updatedAt
+  scenarioVersion           Int               @default(2)
+  attempts                  ScenarioAttempt[]
+
+  @@index([sessionCode])
+  @@index([createdAt])
+  @@index([completed])
+}
+
+model ScenarioAttempt {
+  id             String             @id @default(cuid())
+  sessionId      String
+  scenarioId     String
+  selectedAction String
+  reason         String?
+  correct        Boolean
+  score          Int
+  createdAt      DateTime           @default(now())
+  session        ParticipantSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, scenarioId])
+  @@index([scenarioId])
+  @@index([createdAt])
+}
+
+model AdminSession {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+}
